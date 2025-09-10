@@ -17,7 +17,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       <DialogContent className="p-0 md:max-w-xl">
         <DialogTitle className="sr-only">Login form</DialogTitle>
         <DialogDescription className="sr-only">
-          Sign in to yourOrbit to access your tools and apps
+          Sign in to Splitimize to access your tools and apps
         </DialogDescription>
         <LoginCard />
       </DialogContent>

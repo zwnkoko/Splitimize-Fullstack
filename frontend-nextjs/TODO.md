@@ -1,4 +1,4 @@
-# YourOrbit Frontend TODO List
+Frontend TODO List
 
 ## High Priority
 

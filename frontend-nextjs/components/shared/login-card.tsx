@@ -50,7 +50,7 @@ export function LoginCard() {
       <CardHeader>
         <CardTitle>
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-            Sign in to yourOrbit
+            Sign in to Splitimize
           </h4>
         </CardTitle>
         <CardDescription>

@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="flex size-full flex-col items-center justify-center space-y-8 text-center">
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        🪐 yourOrbit
+        Splitimize
       </h1>
       <p className="mx-auto max-w-[700px] text-sm text-gray-500 dark:text-gray-400 md:text-xl">
         Keep everything in your orbit — organized, focused, and in control.

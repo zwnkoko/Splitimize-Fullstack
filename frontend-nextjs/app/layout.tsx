@@ -12,8 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "YourOrbit",
-  description: "Modular personal productivity suite",
+  title: "Splitimize",
+  description:
+    "Smart bill-splitting app using OCR and AI to extract receipt items and split payments easily.",
 };
 
 export default function RootLayout({
@@ -33,7 +34,7 @@ export default function RootLayout({
           >
             <div className="mx-2 grid min-h-dvh grid-rows-[auto_1fr_auto] md:mx-auto md:max-w-7xl">
               <header className="pt-2">
-                <NavBar title="🪐 yourOrbit" links={navLinks} />
+                <NavBar title="Splitimize" links={navLinks} />
               </header>
               <main className="py-8">{children}</main>
               <footer className="flex flex-col items-center gap-4 pb-2">
