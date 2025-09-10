@@ -41,6 +41,7 @@ interface FileUploadProps {
   disabled?: boolean;
   uploadedFiles: File[];
   toastPosition?: "top-center" | "top-left" | "top-right" | "bottom-center";
+  toastDuration?: number;
 }
 
 export function FileDropZone({
@@ -54,6 +55,7 @@ export function FileDropZone({
   disabled = false,
   uploadedFiles = [],
   toastPosition = "top-center",
+  toastDuration = 4000,
 }: FileUploadProps) {
   const [duplicateFileCount, setDuplicateFileCount] = useState(0); // Move to state
 
@@ -96,7 +98,7 @@ export function FileDropZone({
 
           toast.error(`${fileRejections.length} Upload Failed`, {
             description: message,
-            duration: 4000,
+            duration: toastDuration,
           });
         });
       });
@@ -110,7 +112,7 @@ export function FileDropZone({
         {
           description:
             "Same file is already uploaded. Skipped duplicate upload.",
-          duration: 4000,
+          duration: toastDuration,
         }
       );
 
