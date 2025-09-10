@@ -91,12 +91,15 @@ export function FileDropZone({
         errors.forEach((error) => {
           const message =
             error.code === "file-too-large"
-              ? `File is too large (${(file.size / (1024 * 1024)).toFixed(
+              ? `The file exceeds the maximum allowed size (${(
+                  file.size /
+                  (1024 * 1024)
+                ).toFixed(2)} MB). Maximum: ${(maxSize / (1024 * 1024)).toFixed(
                   2
-                )}MB). Max size is ${maxSize / (1024 * 1024)}MB.`
-              : `File type not supported`;
+                )} MB.`
+              : `Unsupported file type. Please upload a valid image format.`;
 
-          toast.error(`${fileRejections.length} Upload Failed`, {
+          toast.error(`${fileRejections.length} upload(s) failed`, {
             description: message,
             duration: toastDuration,
           });
@@ -105,16 +108,10 @@ export function FileDropZone({
     }
 
     if (duplicateFileCount > 0) {
-      toast.warning(
-        `${duplicateFileCount} Duplicate${
-          duplicateFileCount > 1 ? "s" : ""
-        } Skipped`,
-        {
-          description:
-            "Same file is already uploaded. Skipped duplicate upload.",
-          duration: toastDuration,
-        }
-      );
+      toast.warning(`${duplicateFileCount} duplicate file(s) skipped`, {
+        description: "This file was already uploaded and was skipped.",
+        duration: toastDuration,
+      });
 
       // Reset the count after showing toast
       setDuplicateFileCount(0);
@@ -146,7 +143,7 @@ export function FileDropZone({
       {uploadedFiles.length > 0 && (
         <div className="mt-4">
           <p className="text-sm leading-7 [&:not(:first-child)]:mt-6">
-            Uploaded Files ({uploadedFiles.length})
+            Uploaded files ({uploadedFiles.length})
           </p>
           <ul className="mt-4 space-y-2">
             {uploadedFiles.map((file, index) => (
@@ -160,7 +157,7 @@ export function FileDropZone({
                     {file.name}
                   </p>
                   <p className="text-xs text-neutral-500">
-                    {(file.size / (1024 * 1024)).toFixed(3)} MB
+                    {(file.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>
                 <button
