@@ -40,6 +40,7 @@ interface FileUploadProps {
   fileIcon?: LucideIcon;
   disabled?: boolean;
   uploadedFiles: File[];
+  toastPosition?: "top-center" | "top-left" | "top-right" | "bottom-center";
 }
 
 export function FileDropZone({
@@ -52,6 +53,7 @@ export function FileDropZone({
   fileIcon: FileIcon = File,
   disabled = false,
   uploadedFiles = [],
+  toastPosition = "top-center",
 }: FileUploadProps) {
   const [duplicateFileCount, setDuplicateFileCount] = useState(0); // Move to state
 
@@ -120,7 +122,7 @@ export function FileDropZone({
   return (
     <div className="container">
       {/* Toast Notifications for file rejection errors*/}
-      <Toaster position="top-center" />
+      <Toaster position={toastPosition} />
 
       {/* File Drop Zone */}
       <div
