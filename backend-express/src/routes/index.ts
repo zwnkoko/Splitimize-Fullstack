@@ -1,6 +1,7 @@
 import { Router } from "express";
 import parseReceipts from "./parse-receipts";
-import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "@/constant";
+import { FileUploadConfig } from "@splitimize/shared";
+
 const router = Router();
 
 router.get("/", (_req, res) => {
@@ -15,10 +16,12 @@ router.get("/health", (_req, res) => {
 });
 
 router.get("/allowed-files", (_req, res) => {
-  res.json({
-    maxFileSize: `${MAX_FILE_SIZE} BYTES`,
-    allowedFileTypes: ALLOWED_FILE_TYPES,
-  });
+  const config: FileUploadConfig = {
+    allowedMimeTypes: ["image/*"],
+    maxFileSizeInMB: 5,
+  };
+
+  res.json(config);
 });
 
 router.use("/parse-receipts", parseReceipts);
