@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "@/constant";
+import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
 import { extractTextFromImage, geminiProcessOcrText } from "@/utils/ocr";
 
 const router = Router();
@@ -8,10 +8,10 @@ const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: MAX_FILE_SIZE,
+    fileSize: fileConfig.maxFileSizeInMB * 1024 * 1024,
   },
   fileFilter: (_req, file, cb) => {
-    const isAllowed = ALLOWED_FILE_TYPES.some((type) =>
+    const isAllowed = Object.keys(fileConfig.allowedMimeTypes).some((type) =>
       file.mimetype.startsWith(type)
     );
 
@@ -20,7 +20,9 @@ const upload = multer({
     } else {
       cb(
         new Error(
-          `Only files of type ${ALLOWED_FILE_TYPES.join(", ")} are allowed`
+          `Only files of type ${Object.keys(fileConfig.allowedMimeTypes).join(
+            ", "
+          )} are allowed`
         )
       );
     }
