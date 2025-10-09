@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
 import { useParseReceipt } from "@/hooks/useParseReceipt";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function UploadReceiptPage() {
   // Keep track of files uploaded so we can send them to the server on submit
@@ -23,12 +24,7 @@ export default function UploadReceiptPage() {
     setShowAuthModal,
   } = useAuthGuard();
 
-  const {
-    mutate: parseReceipt,
-    isError: parseError,
-    isPending: parsePending,
-    isSuccess: parseSuccess,
-  } = useParseReceipt();
+  const { mutate: parseReceipt, isPending: parsePending } = useParseReceipt();
 
   const handleSubmit = () => {
     if (authPending) {
@@ -48,10 +44,10 @@ export default function UploadReceiptPage() {
       parseReceipt(formData, {
         onSuccess: () => {
           setUploadedFiles([]);
-          toast.success("Receipt parsed successfully!");
+          toast.success("Receipt scanned successfully!");
         },
         onError: () => {
-          toast.error("Failed to parse receipt. Please try again.");
+          toast.error("Failed to scan receipt. Please try again.");
         },
       });
     });
@@ -76,8 +72,18 @@ export default function UploadReceiptPage() {
           fileIcon={FileImage}
           toastDuration={5000}
         />
-        <Button className="container" onClick={handleSubmit}>
-          Submit
+        <Button
+          className="container"
+          onClick={handleSubmit}
+          disabled={parsePending}
+        >
+          {parsePending ? (
+            <>
+              <Spinner /> Scanning...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </div>
 
