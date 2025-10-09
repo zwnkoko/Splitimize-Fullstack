@@ -9,17 +9,29 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
+import { useParseReceipt } from "@/hooks/useParseReceipt";
 
 export default function UploadReceiptPage() {
   // Keep track of files uploaded so we can send them to the server on submit
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   // To authenticate user before allowing upload
-  const { isPending, requireAuth, showAuthModal, setShowAuthModal } =
-    useAuthGuard();
+  const {
+    isPending: authPending,
+    requireAuth,
+    showAuthModal,
+    setShowAuthModal,
+  } = useAuthGuard();
+
+  const {
+    mutate: parseReceipt,
+    isError: parseError,
+    isPending: parsePending,
+    isSuccess: parseSuccess,
+  } = useParseReceipt();
 
   const handleSubmit = () => {
-    if (isPending) {
+    if (authPending) {
       toast.info("Please try again in a few seconds.");
       return;
     }
@@ -31,10 +43,17 @@ export default function UploadReceiptPage() {
 
       const formData = new FormData();
       uploadedFiles.forEach((file) => {
-        formData.append("files", file);
+        formData.append("image", file);
       });
-
-      setUploadedFiles([]); // Clear the uploaded files after submission
+      parseReceipt(formData, {
+        onSuccess: () => {
+          setUploadedFiles([]);
+          toast.success("Receipt parsed successfully!");
+        },
+        onError: () => {
+          toast.error("Failed to parse receipt. Please try again.");
+        },
+      });
     });
   };
 
@@ -61,10 +80,10 @@ export default function UploadReceiptPage() {
           Submit
         </Button>
       </div>
-      {/* 
+
       {showAuthModal && (
         <AuthDialog open={showAuthModal} onOpenChange={setShowAuthModal} />
-      )} */}
+      )}
     </>
   );
 }
