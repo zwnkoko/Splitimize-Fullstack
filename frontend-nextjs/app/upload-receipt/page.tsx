@@ -8,48 +8,52 @@ import { AuthDialog } from "@/components/shared/auth-dialog";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { apiRoutes } from "@/lib/api-routes";
+import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
 
 export default function UploadReceiptPage() {
-  const maxMB = 10;
-  // hold uploaded receipts
+  // Keep track of files uploaded so we can send them to the server on submit
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
-  // Auth guard
+  // To authenticate user before allowing upload
   const { isPending, requireAuth, showAuthModal, setShowAuthModal } =
     useAuthGuard();
 
   const handleSubmit = () => {
-    // if authentication pending, do not allow submission
     if (isPending) {
       toast.info("Please try again in a few seconds.");
       return;
     }
-    requireAuth(() => {
-      if (uploadedFiles.length > 0) {
-        // Handle file submission logic here
-        console.log("Files submitted:", uploadedFiles);
-        //setUploadedFiles([]); // Clear the uploaded files after submission
-      } else {
-        toast("Please upload at least one file");
+    requireAuth(async () => {
+      if (uploadedFiles.length === 0) {
+        toast.error("Please upload at least one file");
+        return;
       }
+
+      const formData = new FormData();
+      uploadedFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      setUploadedFiles([]); // Clear the uploaded files after submission
     });
   };
+
   return (
     <>
+      <Toaster position="top-center" />
       <div className="size-full flex flex-col justify-center gap-y-4 items-center">
-        <h1 className="scroll-m-20 text-2xl font-semibold tracking-tight text-center">
-          Upload Receipts
+        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+          Splitimize
         </h1>
         <FileDropZone
-          accept={{ "image/*": [] }}
-          maxSize={maxMB * 1024 * 1024} // 10MB
+          accept={fileConfig.allowedMimeTypes}
+          maxSize={fileConfig.maxFileSizeInMB * 1024 * 1024}
           uploadedFiles={uploadedFiles}
           onFilesChange={(files: File[]) => {
             setUploadedFiles(files);
           }}
-          placeholder="Drop receipts or click to upload"
-          description={`Max ${maxMB}MB per file`}
+          placeholder="Upload Receipt Image"
+          description={`Click or Drag & Drop. Max ${fileConfig.maxFileSizeInMB}MB per file`}
           fileIcon={FileImage}
           toastDuration={5000}
         />
@@ -57,10 +61,10 @@ export default function UploadReceiptPage() {
           Submit
         </Button>
       </div>
-
+      {/* 
       {showAuthModal && (
         <AuthDialog open={showAuthModal} onOpenChange={setShowAuthModal} />
-      )}
+      )} */}
     </>
   );
 }
