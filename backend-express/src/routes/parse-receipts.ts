@@ -11,8 +11,17 @@ const upload = multer({
     fileSize: fileConfig.maxFileSizeInMB * 1024 * 1024,
   },
   fileFilter: (_req, file, cb) => {
+    const matchesPattern = (pattern: string, mimetype: string) => {
+      if (pattern === mimetype) return true;
+      if (pattern.endsWith("/*")) {
+        const prefix = pattern.slice(0, pattern.indexOf("/"));
+        return mimetype.startsWith(prefix + "/");
+      }
+      return false;
+    };
+
     const isAllowed = Object.keys(fileConfig.allowedMimeTypes).some((type) =>
-      file.mimetype.startsWith(type)
+      matchesPattern(type, file.mimetype)
     );
 
     if (isAllowed) {
