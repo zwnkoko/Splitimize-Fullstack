@@ -18,6 +18,7 @@
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@splitimize/shared": "*",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.83.0",
     "better-auth": "^1.2.12",
@@ -31,8 +32,7 @@
     "react-dropzone": "^14.3.8",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
-    "vaul": "^1.1.2",
-    "@splitimize/shared": "*"
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
