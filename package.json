@@ -1,5 +1,17 @@
 {
-  "dependencies": {
-    "zod": "^4.1.12"
+  "private": true,
+  "name": "splitimize-fullstack",
+  "version": "1.0.0",
+  "workspaces": [
+    "frontend-nextjs",
+    "backend-express",
+    "shared"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend-nextjs",
+    "dev:backend": "npm run dev --workspace=backend-express",
+    "dev:shared": "npm run build --workspace=shared -- --watch",
+    "dev": "npm run dev --workspace=frontend-nextjs & npm run dev --workspace=backend-express",
+    "build:shared": "npm run build --workspace=shared"
   }
 }
