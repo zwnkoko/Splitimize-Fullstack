@@ -1,5 +1,5 @@
 import "tsconfig-paths/register";
-import express, { Request, Response } from "express";
+import express from "express";
 import routes from "./routes";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";

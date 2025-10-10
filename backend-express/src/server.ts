@@ -1,12 +1,10 @@
 import dotenv from "dotenv";
 
-// Load environment-specific .env file
-const envFile =
-  process.env.NODE_ENV === "production"
-    ? ".env.production"
-    : ".env.development";
-
-dotenv.config({ path: envFile });
+// Load .env only if not in production
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+  console.log("Loaded environment variables from .env");
+}
 
 function checkEnvVars(vars: string[]) {
   const missing = vars.filter((v) => !process.env[v]);

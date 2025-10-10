@@ -116,7 +116,7 @@ export function FileDropZone({
       // Reset the count after showing toast
       setDuplicateFileCount(0);
     }
-  }, [fileRejections, duplicateFileCount]);
+  }, [fileRejections, duplicateFileCount, maxSize, toastDuration]);
 
   return (
     <div className="container">
