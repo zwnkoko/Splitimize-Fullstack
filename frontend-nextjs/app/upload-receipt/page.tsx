@@ -47,7 +47,6 @@ export default function UploadReceiptPage() {
       parseReceipt(formData, {
         onSuccess: (data) => {
           setParsedReceipt(data);
-          setUploadedFiles([]);
           toast.success("Receipt parsed successfully!");
           router.push("/itemized-list");
         },
