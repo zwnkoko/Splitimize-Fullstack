@@ -22,9 +22,10 @@ export default function SplitByItemPage() {
   >({});
   const [addPersonDialogOpen, setAddPersonDialogOpen] = useState(false);
   const [newPersonName, setNewPersonName] = useState("");
-  const [splitResult, setSplitResult] = useState<Record<string, number> | null>(
-    null
-  );
+  const [splitResult, setSplitResult] = useState<{
+    personTotals: Record<string, number>;
+    unassignedItems: Array<{ item: ReceiptItem; index: number }>;
+  } | null>(null);
 
   useEffect(() => {
     if (!parsedReceipt) {
@@ -88,12 +89,13 @@ export default function SplitByItemPage() {
     }
 
     const personTotals: Record<string, number> = {};
+    const unassignedItems: Array<{ item: ReceiptItem; index: number }> = [];
 
     people.forEach((person) => {
       personTotals[person] = 0;
     });
 
-    // Calculate item totals
+    // Calculate item totals and track unassigned items
     items.forEach((item: ReceiptItem, index: number) => {
       const assignedPeople = itemAssignments[index] || [];
       if (assignedPeople.length > 0) {
@@ -101,6 +103,8 @@ export default function SplitByItemPage() {
         assignedPeople.forEach((person) => {
           personTotals[person] += splitAmount;
         });
+      } else {
+        unassignedItems.push({ item, index });
       }
     });
 
@@ -117,7 +121,7 @@ export default function SplitByItemPage() {
       });
     }
 
-    setSplitResult(personTotals);
+    setSplitResult({ personTotals, unassignedItems });
     toast.success("Split calculated successfully!");
   };
 
@@ -292,34 +296,80 @@ export default function SplitByItemPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {Object.entries(splitResult).map(([person, amount]) => (
-                <div
-                  key={person}
-                  className="flex items-center justify-between p-4 bg-white dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800"
-                >
-                  <div className="flex items-center gap-3">
-                    <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    <span className="font-semibold text-lg">{person}</span>
+              {Object.entries(splitResult.personTotals).map(
+                ([person, amount]) => (
+                  <div
+                    key={person}
+                    className="flex items-center justify-between p-4 bg-white dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      <span className="font-semibold text-lg">{person}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        ${amount.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      ${amount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                )
+              )}
 
               <Separator />
 
               <div className="flex justify-between items-center pt-2">
-                <span className="font-semibold">Total</span>
+                <span className="font-semibold">Assigned Total</span>
                 <span className="text-xl font-bold">
                   $
-                  {Object.values(splitResult)
+                  {Object.values(splitResult.personTotals)
                     .reduce((sum, val) => sum + val, 0)
                     .toFixed(2)}
                 </span>
               </div>
+
+              {/* Unassigned Items Section */}
+              {splitResult.unassignedItems.length > 0 && (
+                <>
+                  <Separator className="my-4" />
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-amber-500 rounded-full"></span>
+                      Unassigned Items ({splitResult.unassignedItems.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {splitResult.unassignedItems.map(({ item, index }) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800"
+                        >
+                          <div>
+                            <span className="font-medium">{item.name}</span>
+                            {item.quantity > 1 && (
+                              <span className="text-sm text-muted-foreground ml-2">
+                                × {item.quantity}
+                              </span>
+                            )}
+                          </div>
+                          <span className="font-semibold text-amber-700 dark:text-amber-400">
+                            ${item.price.toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center pt-2 px-3">
+                      <span className="font-semibold text-amber-700 dark:text-amber-400">
+                        Unassigned Total
+                      </span>
+                      <span className="text-lg font-bold text-amber-700 dark:text-amber-400">
+                        $
+                        {splitResult.unassignedItems
+                          .reduce((sum, { item }) => sum + item.price, 0)
+                          .toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <Button
                 variant="outline"
