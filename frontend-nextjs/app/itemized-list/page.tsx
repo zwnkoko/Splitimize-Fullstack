@@ -177,18 +177,14 @@ export default function ItemizedListPage() {
             <div className="flex gap-3 pt-4">
               <Button
                 className="flex-1"
-                onClick={() => {
-                  /* Handle split by item logic here */
-                }}
+                onClick={() => router.push("/itemized-list/split-by-item")}
               >
                 Split by Item
               </Button>
               <Button
                 className="flex-1"
                 variant="outline"
-                onClick={() => {
-                  setDialogOpen(true);
-                }}
+                onClick={() => setDialogOpen(true)}
               >
                 Split Evenly
               </Button>
