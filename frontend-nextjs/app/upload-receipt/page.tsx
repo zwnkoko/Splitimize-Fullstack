@@ -51,7 +51,7 @@ export default function UploadReceiptPage() {
           router.push("/itemized-list");
         },
         onError: () => {
-          toast.error("Failed to parse receipt. Please try again.");
+          toast.error("Failed to scan receipt. Please try again.");
         },
       });
     });
