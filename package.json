@@ -11,7 +11,11 @@
     "dev:frontend": "npm run dev --workspace=frontend-nextjs",
     "dev:backend": "npm run dev --workspace=backend-express",
     "dev:shared": "npm run build --workspace=shared -- --watch",
-    "dev": "npm run dev --workspace=frontend-nextjs & npm run dev --workspace=backend-express",
-    "build:shared": "npm run build --workspace=shared"
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build:shared": "npm run build --workspace=shared",
+    "build": "npm run build:shared && cd backend-express && npx prisma generate"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

@@ -35,6 +35,7 @@ interface FileUploadProps {
   accept: Record<string, string[]>;
   maxSize: number;
   multiple?: boolean;
+  maxFiles?: number; // Optional: when undefined, no limit
   placeholder: string;
   description: string;
   fileIcon?: LucideIcon;
@@ -49,6 +50,7 @@ export function FileDropZone({
   accept,
   maxSize,
   multiple = true,
+  maxFiles,
   placeholder,
   description,
   fileIcon: FileIcon = File,
@@ -57,16 +59,17 @@ export function FileDropZone({
   toastPosition = "top-center",
   toastDuration = 4000,
 }: FileUploadProps) {
-  const [duplicateFileCount, setDuplicateFileCount] = useState(0); // Move to state
+  const [duplicateFileCount, setDuplicateFileCount] = useState(0);
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
-      accept: accept,
-      maxSize: maxSize,
-      multiple: multiple,
-      disabled: disabled,
+      accept,
+      maxSize,
+      multiple,
+      maxFiles,
+      disabled,
       onDrop: (acceptedFiles) => {
-        // Check for duplicates against files from props
+        // Filter duplicates
         const newFiles = acceptedFiles.filter(
           (newFile) =>
             !uploadedFiles.some(
@@ -80,50 +83,83 @@ export function FileDropZone({
         const duplicateCount = acceptedFiles.length - newFiles.length;
         setDuplicateFileCount(duplicateCount);
 
-        onFilesChange?.([...uploadedFiles, ...newFiles]);
+        const combined = [...uploadedFiles, ...newFiles];
+
+        // Only enforce maxFiles if it's defined
+        if (maxFiles !== undefined && combined.length > maxFiles) {
+          const limited = combined.slice(0, maxFiles);
+          onFilesChange?.(limited);
+          toast.error(`You can only upload up to ${maxFiles} files`, {
+            // description: `You selected ${combined.length}. ${
+            //   combined.length - maxFiles
+            // } were skipped.`,
+            duration: toastDuration,
+          });
+        } else {
+          onFilesChange?.(combined);
+        }
       },
     });
 
-  // Show toast notifications for file rejections
   useEffect(() => {
     if (fileRejections.length > 0) {
       fileRejections.forEach(({ file, errors }) => {
         errors.forEach((error) => {
-          const message =
-            error.code === "file-too-large"
-              ? `The file exceeds the maximum allowed size (${(
-                  file.size /
-                  (1024 * 1024)
-                ).toFixed(2)} MB). Maximum: ${(maxSize / (1024 * 1024)).toFixed(
-                  2
-                )} MB.`
-              : `Unsupported file type. Please upload a valid image format.`;
+          let message = "";
+          switch (error.code) {
+            case "file-too-large":
+              message = `The file exceeds the maximum allowed size (${(
+                file.size /
+                (1024 * 1024)
+              ).toFixed(2)} MB). Maximum: ${(maxSize / (1024 * 1024)).toFixed(
+                2
+              )} MB.`;
+              break;
+            case "too-many-files":
+              message = maxFiles
+                ? `You can upload up to ${maxFiles} ${
+                    maxFiles === 1 ? "file" : "files"
+                  }.`
+                : "Too many files selected.";
+              break;
+            default:
+              message =
+                "Unsupported file type. Please upload a valid image format.";
+          }
 
-          toast.error(`${fileRejections.length} upload(s) failed`, {
-            description: message,
-            duration: toastDuration,
-          });
+          toast.error(
+            `${fileRejections.length} ${
+              fileRejections.length === 1 ? "upload" : "uploads"
+            } failed`,
+            {
+              description: message,
+              duration: toastDuration,
+            }
+          );
         });
       });
     }
 
     if (duplicateFileCount > 0) {
-      toast.warning(`${duplicateFileCount} duplicate file(s) skipped`, {
-        description: "This file was already uploaded and was skipped.",
-        duration: toastDuration,
-      });
-
-      // Reset the count after showing toast
+      toast.warning(
+        `${duplicateFileCount} duplicate ${
+          duplicateFileCount === 1 ? "file" : "files"
+        } skipped`,
+        {
+          description:
+            duplicateFileCount === 1
+              ? "This file was already uploaded."
+              : "These files were already uploaded.",
+          duration: toastDuration,
+        }
+      );
       setDuplicateFileCount(0);
     }
-  }, [fileRejections, duplicateFileCount, maxSize, toastDuration]);
+  }, [fileRejections, duplicateFileCount, maxSize, maxFiles, toastDuration]);
 
   return (
     <div className="container">
-      {/* Toast Notifications for file rejection errors*/}
       <Toaster position={toastPosition} />
-
-      {/* File Drop Zone */}
       <div
         {...getRootProps({
           className: `border-2 border-dashed p-8 text-center hover:border-neutral-500 transition-colors rounded-lg ${
@@ -139,11 +175,13 @@ export function FileDropZone({
         <p className="text-sm text-gray-500 mt-2">{description}</p>
       </div>
 
-      {/* File Preview */}
       {uploadedFiles.length > 0 && (
         <div className="mt-4">
           <p className="text-sm leading-7 [&:not(:first-child)]:mt-6">
-            Uploaded files ({uploadedFiles.length})
+            Uploaded files{" "}
+            {maxFiles !== undefined
+              ? `(${uploadedFiles.length}/${maxFiles})`
+              : `(${uploadedFiles.length})`}
           </p>
           <ul className="mt-4 space-y-2">
             {uploadedFiles.map((file, index) => (
