@@ -10,12 +10,16 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
 import { useParseReceipt } from "@/hooks/useParseReceipt";
+import { useRouter } from "next/navigation";
+import { useReceipt } from "@/contexts/ReceiptContext";
 
 export default function UploadReceiptPage() {
+  const router = useRouter();
+  const { setParsedReceipt } = useReceipt();
   // Keep track of files uploaded so we can send them to the server on submit
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
-  // To authenticate user before allowing upload
+  // For authenticating user before allowing upload
   const {
     isPending: authPending,
     requireAuth,
@@ -23,12 +27,7 @@ export default function UploadReceiptPage() {
     setShowAuthModal,
   } = useAuthGuard();
 
-  const {
-    mutate: parseReceipt,
-    isError: parseError,
-    isPending: parsePending,
-    isSuccess: parseSuccess,
-  } = useParseReceipt();
+  const { mutate: parseReceipt, isPending: parsePending } = useParseReceipt();
 
   const handleSubmit = () => {
     if (authPending) {
@@ -46,9 +45,11 @@ export default function UploadReceiptPage() {
         formData.append("image", file);
       });
       parseReceipt(formData, {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          setParsedReceipt(data);
           setUploadedFiles([]);
           toast.success("Receipt parsed successfully!");
+          router.push("/itemized-list");
         },
         onError: () => {
           toast.error("Failed to parse receipt. Please try again.");
@@ -67,6 +68,7 @@ export default function UploadReceiptPage() {
         <FileDropZone
           accept={fileConfig.allowedMimeTypes}
           maxSize={fileConfig.maxFileSizeInMB * 1024 * 1024}
+          maxFiles={fileConfig.maxFiles}
           uploadedFiles={uploadedFiles}
           onFilesChange={(files: File[]) => {
             setUploadedFiles(files);
@@ -77,7 +79,7 @@ export default function UploadReceiptPage() {
           toastDuration={5000}
         />
         <Button className="container" onClick={handleSubmit}>
-          Submit
+          {parsePending ? "Scanning receipt..." : "Submit"}
         </Button>
       </div>
 

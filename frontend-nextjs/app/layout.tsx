@@ -6,6 +6,7 @@ import { NavBar } from "@/components/shared/nav-bar";
 import { Footer } from "@/components/shared/footer";
 import { navLinks } from "@/app/navLinks";
 import { QueryProvider } from "@/components/query-provider";
+import { ReceiptProvider } from "@/contexts/ReceiptContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,15 +33,17 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="mx-2 grid min-h-dvh grid-rows-[auto_1fr_auto] md:mx-auto md:max-w-7xl">
-              <header className="pt-2">
-                <NavBar title="Splitimize" links={navLinks} />
-              </header>
-              <main className="py-8">{children}</main>
-              <footer className="flex flex-col items-center gap-4 pb-2">
-                <Footer />
-              </footer>
-            </div>
+            <ReceiptProvider>
+              <div className="mx-2 grid min-h-dvh grid-rows-[auto_1fr_auto] md:mx-auto md:max-w-7xl">
+                <header className="pt-2">
+                  <NavBar title="Splitimize" links={navLinks} />
+                </header>
+                <main className="py-8">{children}</main>
+                <footer className="flex flex-col items-center gap-4 pb-2">
+                  <Footer />
+                </footer>
+              </div>
+            </ReceiptProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>
