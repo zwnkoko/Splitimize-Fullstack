@@ -42,7 +42,7 @@ export default function SplitByItemPage() {
   }
 
   const { generatedContent } = parsedReceipt;
-  const { items, tax, tips, total } = generatedContent;
+  const { items, tax, tips } = generatedContent;
 
   const handleAddPerson = () => {
     if (newPersonName.trim() && !people.includes(newPersonName.trim())) {
