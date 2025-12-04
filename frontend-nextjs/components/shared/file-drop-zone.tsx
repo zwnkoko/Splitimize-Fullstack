@@ -35,11 +35,14 @@ interface FileUploadProps {
   accept: Record<string, string[]>;
   maxSize: number;
   multiple?: boolean;
+  maxFiles?: number; // Optional: when undefined, no limit
   placeholder: string;
   description: string;
   fileIcon?: LucideIcon;
   disabled?: boolean;
   uploadedFiles: File[];
+  toastPosition?: "top-center" | "top-left" | "top-right" | "bottom-center";
+  toastDuration?: number;
 }
 
 export function FileDropZone({
@@ -47,22 +50,26 @@ export function FileDropZone({
   accept,
   maxSize,
   multiple = true,
+  maxFiles,
   placeholder,
   description,
   fileIcon: FileIcon = File,
   disabled = false,
   uploadedFiles = [],
+  toastPosition = "top-center",
+  toastDuration = 4000,
 }: FileUploadProps) {
-  const [duplicateFileCount, setDuplicateFileCount] = useState(0); // Move to state
+  const [duplicateFileCount, setDuplicateFileCount] = useState(0);
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
-      accept: accept,
-      maxSize: maxSize,
-      multiple: multiple,
-      disabled: disabled,
+      accept,
+      maxSize,
+      multiple,
+      maxFiles,
+      disabled,
       onDrop: (acceptedFiles) => {
-        // Check for duplicates against files from props
+        // Filter duplicates
         const newFiles = acceptedFiles.filter(
           (newFile) =>
             !uploadedFiles.some(
@@ -76,53 +83,83 @@ export function FileDropZone({
         const duplicateCount = acceptedFiles.length - newFiles.length;
         setDuplicateFileCount(duplicateCount);
 
-        onFilesChange?.([...uploadedFiles, ...newFiles]);
+        const combined = [...uploadedFiles, ...newFiles];
+
+        // Only enforce maxFiles if it's defined
+        if (maxFiles !== undefined && combined.length > maxFiles) {
+          const limited = combined.slice(0, maxFiles);
+          onFilesChange?.(limited);
+          toast.error(`You can only upload up to ${maxFiles} files`, {
+            // description: `You selected ${combined.length}. ${
+            //   combined.length - maxFiles
+            // } were skipped.`,
+            duration: toastDuration,
+          });
+        } else {
+          onFilesChange?.(combined);
+        }
       },
     });
 
-  // Show toast notifications for file rejections
   useEffect(() => {
     if (fileRejections.length > 0) {
       fileRejections.forEach(({ file, errors }) => {
         errors.forEach((error) => {
-          const message =
-            error.code === "file-too-large"
-              ? `File is too large (${(file.size / (1024 * 1024)).toFixed(
-                  2
-                )}MB). Max size is ${maxSize / (1024 * 1024)}MB.`
-              : `File type not supported`;
+          let message = "";
+          switch (error.code) {
+            case "file-too-large":
+              message = `The file exceeds the maximum allowed size (${(
+                file.size /
+                (1024 * 1024)
+              ).toFixed(2)} MB). Maximum: ${(maxSize / (1024 * 1024)).toFixed(
+                2
+              )} MB.`;
+              break;
+            case "too-many-files":
+              message = maxFiles
+                ? `You can upload up to ${maxFiles} ${
+                    maxFiles === 1 ? "file" : "files"
+                  }.`
+                : "Too many files selected.";
+              break;
+            default:
+              message =
+                "Unsupported file type. Please upload a valid image format.";
+          }
 
-          toast.error(`${fileRejections.length} Upload Failed`, {
-            description: message,
-            duration: 4000,
-          });
+          toast.error(
+            `${fileRejections.length} ${
+              fileRejections.length === 1 ? "upload" : "uploads"
+            } failed`,
+            {
+              description: message,
+              duration: toastDuration,
+            }
+          );
         });
       });
     }
 
     if (duplicateFileCount > 0) {
       toast.warning(
-        `${duplicateFileCount} Duplicate${
-          duplicateFileCount > 1 ? "s" : ""
-        } Skipped`,
+        `${duplicateFileCount} duplicate ${
+          duplicateFileCount === 1 ? "file" : "files"
+        } skipped`,
         {
           description:
-            "Same file is already uploaded. Skipped duplicate upload.",
-          duration: 4000,
+            duplicateFileCount === 1
+              ? "This file was already uploaded."
+              : "These files were already uploaded.",
+          duration: toastDuration,
         }
       );
-
-      // Reset the count after showing toast
       setDuplicateFileCount(0);
     }
-  }, [fileRejections, duplicateFileCount]);
+  }, [fileRejections, duplicateFileCount, maxSize, maxFiles, toastDuration]);
 
   return (
     <div className="container">
-      {/* Toast Notifications for file rejection errors*/}
-      <Toaster position="top-center" />
-
-      {/* File Drop Zone */}
+      <Toaster position={toastPosition} />
       <div
         {...getRootProps({
           className: `border-2 border-dashed p-8 text-center hover:border-neutral-500 transition-colors rounded-lg ${
@@ -138,11 +175,13 @@ export function FileDropZone({
         <p className="text-sm text-gray-500 mt-2">{description}</p>
       </div>
 
-      {/* File Preview */}
       {uploadedFiles.length > 0 && (
         <div className="mt-4">
           <p className="text-sm leading-7 [&:not(:first-child)]:mt-6">
-            Uploaded Files ({uploadedFiles.length})
+            Uploaded files{" "}
+            {maxFiles !== undefined
+              ? `(${uploadedFiles.length}/${maxFiles})`
+              : `(${uploadedFiles.length})`}
           </p>
           <ul className="mt-4 space-y-2">
             {uploadedFiles.map((file, index) => (
@@ -156,7 +195,7 @@ export function FileDropZone({
                     {file.name}
                   </p>
                   <p className="text-xs text-neutral-500">
-                    {(file.size / (1024 * 1024)).toFixed(3)} MB
+                    {(file.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>
                 <button

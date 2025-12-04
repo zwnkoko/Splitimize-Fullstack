@@ -54,7 +54,7 @@ export function LoginCard() {
           </h4>
         </CardTitle>
         <CardDescription>
-          Access your tools, and apps — all in one place
+          Authentication required to access this feature
         </CardDescription>
       </CardHeader>
 
