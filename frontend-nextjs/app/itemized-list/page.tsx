@@ -12,7 +12,6 @@ import {
   Calendar,
   CreditCard,
   ArrowLeft,
-  Plus,
   Users,
   DollarSign,
 } from "lucide-react";
