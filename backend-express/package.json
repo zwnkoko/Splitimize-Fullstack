@@ -2,13 +2,13 @@
   "dependencies": {
     "@google/genai": "^1.22.0",
     "@prisma/client": "^6.11.1",
-    "better-auth": "1.2.10",
+    "@splitimize/shared": "*",
+    "better-auth": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "multer": "^2.0.2",
-    "tesseract.js": "^6.0.1",
-    "@splitimize/shared": "*"
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
