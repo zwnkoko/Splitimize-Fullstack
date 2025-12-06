@@ -4,6 +4,7 @@ import routes from "./routes";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";
 import cors from "cors";
+import { requireAuth } from "./middleware/require-auth";
 
 const app = express();
 
@@ -19,11 +20,10 @@ app.use(
 // Middleware to handle all auth requests
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 
-// Middleware
 // Body parser
 app.use(express.json());
 
-// Routes
-app.use("/api", routes);
+// Protected routes
+app.use("/api", requireAuth, routes);
 
 export default app;
