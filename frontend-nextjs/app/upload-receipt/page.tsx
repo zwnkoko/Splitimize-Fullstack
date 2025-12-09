@@ -13,6 +13,7 @@ import { useParseReceipt } from "@/hooks/useParseReceipt";
 import { useRouter } from "next/navigation";
 import { useReceipt } from "@/contexts/ReceiptContext";
 import { compressImage } from "@/lib/image-compression";
+import { GlowWrapper } from "@/components/ui/glow-wrapper";
 
 export default function UploadReceiptPage() {
   const router = useRouter();
@@ -114,13 +115,15 @@ export default function UploadReceiptPage() {
           fileIcon={FileImage}
           toastDuration={5000}
         />
-        <Button
-          className="container"
-          onClick={handleSubmit}
-          disabled={parsePending}
-        >
-          {parsePending ? "Scanning receipt..." : "Submit"}
-        </Button>
+        <GlowWrapper isGlowing={parsePending} className="container">
+          <Button
+            className="container disabled:opacity-100"
+            onClick={handleSubmit}
+            disabled={parsePending}
+          >
+            {parsePending ? "Scanning receipt..." : "Submit"}
+          </Button>
+        </GlowWrapper>
       </div>
 
       {showAuthModal && (
