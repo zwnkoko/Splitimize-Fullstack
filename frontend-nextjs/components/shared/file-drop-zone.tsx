@@ -69,14 +69,18 @@ export function FileDropZone({
       maxFiles,
       disabled,
       onDrop: (acceptedFiles) => {
+        // Compare by name without extension (case-insensitive)
+        const baseName = (name: string) =>
+          name.replace(/\.[^/.]+$/, "").toLowerCase();
+
         // Filter duplicates
         const newFiles = acceptedFiles.filter(
           (newFile) =>
             !uploadedFiles.some(
               (existingFile) =>
-                existingFile.name === newFile.name &&
-                existingFile.size === newFile.size &&
-                existingFile.lastModified === newFile.lastModified
+                baseName(existingFile.name) === baseName(newFile.name) //&&
+              //existingFile.size === newFile.size &&
+              //existingFile.lastModified === newFile.lastModified
             )
         );
 
