@@ -114,7 +114,11 @@ export default function UploadReceiptPage() {
           fileIcon={FileImage}
           toastDuration={5000}
         />
-        <Button className="container" onClick={handleSubmit}>
+        <Button
+          className="container"
+          onClick={handleSubmit}
+          disabled={parsePending}
+        >
           {parsePending ? "Scanning receipt..." : "Submit"}
         </Button>
       </div>
