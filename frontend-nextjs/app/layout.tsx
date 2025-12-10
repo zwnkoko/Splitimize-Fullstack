@@ -25,6 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
+      <head>
+        {/* Umami Analytics Script */}
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="1c92eba3-4b41-4abf-8b12-2197f98a2602"
+        ></script>
+      </head>
       <body className="antialiased">
         <QueryProvider>
           <ThemeProvider

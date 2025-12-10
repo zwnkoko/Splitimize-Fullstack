@@ -28,6 +28,7 @@ checkEnvVars([
   "GITHUB_CLIENT_SECRET",
   "FRONTEND_URL",
   "GEMINI_API_KEY",
+  "OCR_SPACE_API_KEY",
 ]);
 
 import app from "./app";
