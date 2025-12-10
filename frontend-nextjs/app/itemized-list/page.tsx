@@ -32,7 +32,7 @@ export default function ItemizedListPage() {
     if (!parsedReceipt) {
       router.push("/upload-receipt");
     }
-  }, [parsedReceipt]);
+  }, [parsedReceipt, router]);
 
   if (!parsedReceipt) {
     return (
