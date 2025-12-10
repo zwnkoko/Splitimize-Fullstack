@@ -12,14 +12,14 @@ import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
 import { useParseReceipt } from "@/hooks/useParseReceipt";
 import { useRouter } from "next/navigation";
 import { useReceipt } from "@/contexts/ReceiptContext";
+import { compressImage } from "@/lib/image-compression";
+import { GlowWrapper } from "@/components/ui/glow-wrapper";
 
 export default function UploadReceiptPage() {
   const router = useRouter();
   const { setParsedReceipt } = useReceipt();
-  // Keep track of files uploaded so we can send them to the server on submit
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
-  // For authenticating user before allowing upload
   const {
     isPending: authPending,
     requireAuth,
@@ -28,6 +28,46 @@ export default function UploadReceiptPage() {
   } = useAuthGuard();
 
   const { mutate: parseReceipt, isPending: parsePending } = useParseReceipt();
+
+  const handleFilesChange = async (files: File[]) => {
+    // Handle empty array case immediately
+    if (files.length === 0) {
+      setUploadedFiles([]);
+      return;
+    }
+
+    try {
+      const results = await Promise.allSettled(
+        files.map((file) => compressImage(file))
+      );
+
+      const successes: File[] = [];
+      const failures: { file: File; reason: unknown }[] = [];
+
+      results.forEach((res, i) => {
+        if (res.status === "fulfilled") successes.push(res.value);
+        else failures.push({ file: files[i], reason: res.reason });
+      });
+
+      if (successes.length) setUploadedFiles(successes);
+
+      if (failures.length) {
+        const tooLarge = failures.some(
+          (f) =>
+            f.reason instanceof Error && f.reason.message.includes("under 1MB")
+        );
+        toast.error(
+          successes.length
+            ? `${failures.length} file(s) failed to compress${
+                tooLarge ? " (too large)" : ""
+              }.`
+            : "Failed to compress selected images. Please try different files."
+        );
+      }
+    } catch {
+      toast.error("Unexpected error while compressing images.");
+    }
+  };
 
   const handleSubmit = () => {
     if (authPending) {
@@ -69,17 +109,21 @@ export default function UploadReceiptPage() {
           maxSize={fileConfig.maxFileSizeInMB * 1024 * 1024}
           maxFiles={fileConfig.maxFiles}
           uploadedFiles={uploadedFiles}
-          onFilesChange={(files: File[]) => {
-            setUploadedFiles(files);
-          }}
+          onFilesChange={handleFilesChange}
           placeholder="Upload Receipt Image"
           description={`Click or Drag & Drop. Max ${fileConfig.maxFileSizeInMB}MB per file`}
           fileIcon={FileImage}
           toastDuration={5000}
         />
-        <Button className="container" onClick={handleSubmit}>
-          {parsePending ? "Scanning receipt..." : "Submit"}
-        </Button>
+        <GlowWrapper isGlowing={parsePending} className="container">
+          <Button
+            className="container disabled:opacity-100"
+            onClick={handleSubmit}
+            disabled={parsePending}
+          >
+            {parsePending ? "Scanning receipt..." : "Submit"}
+          </Button>
+        </GlowWrapper>
       </div>
 
       {showAuthModal && (
