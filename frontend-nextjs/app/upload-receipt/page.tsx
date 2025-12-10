@@ -82,7 +82,7 @@ export default function UploadReceiptPage() {
 
       const formData = new FormData();
       uploadedFiles.forEach((file) => {
-        formData.append("image", file);
+        formData.append("images", file);
       });
       parseReceipt(formData, {
         onSuccess: (data) => {
