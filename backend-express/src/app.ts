@@ -4,6 +4,8 @@ import routes from "./routes";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";
 import cors from "cors";
+import { requireAuth } from "./middleware/require-auth";
+import { timeStamp } from "console";
 
 const app = express();
 
@@ -19,11 +21,19 @@ app.use(
 // Middleware to handle all auth requests
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 
-// Middleware
 // Body parser
 app.use(express.json());
 
-// Routes
-app.use("/api", routes);
+app.get("/", (_req, res) => {
+  res.json({
+    name: "Splitimize API",
+    version: "1.0.0",
+    status: "running",
+    timeStamp: new Date().toISOString(),
+  });
+});
+
+// Protected routes
+app.use("/api", requireAuth, routes);
 
 export default app;

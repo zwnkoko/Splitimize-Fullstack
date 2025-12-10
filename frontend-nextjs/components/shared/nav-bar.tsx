@@ -20,7 +20,7 @@ export function NavBar({ title, links, showThemeToggle = true }: NavBarProps) {
       {/* Medium and above view port normal nav bar*/}
       <nav className="hidden size-full grid-cols-12 md:grid">
         <div className="col-span-7 flex flex-col justify-center">
-          <p> {title} </p>
+          <p className="font-semibold"> {title} </p>
         </div>
         <div className="col-span-5 flex flex-row items-center justify-end gap-8">
           {links.map((link) => (

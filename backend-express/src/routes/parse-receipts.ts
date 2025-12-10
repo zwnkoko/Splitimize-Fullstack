@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { FILE_UPLOAD_CONFIG as fileConfig } from "@splitimize/shared";
-import { extractTextFromImage, geminiProcessOcrText } from "@/utils/ocr";
+import { extractTextFromImage, geminiProcessOcrText } from "@/services";
 
 const router = Router();
 
