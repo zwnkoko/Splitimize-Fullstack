@@ -14,7 +14,16 @@ export const compressImage = async (file: File): Promise<File> => {
   if (isHeic) {
     try {
       const mod = await import("heic2any");
-      const heic2any = (mod as any).default ?? (mod as any);
+
+      type Heic2Any = (options: {
+        blob: Blob;
+        toType: string;
+        quality: number;
+      }) => Promise<Blob | Blob[]>;
+
+      const heic2any =
+        (mod as unknown as { default: Heic2Any }).default ??
+        (mod as unknown as Heic2Any);
 
       const convertedBlob = await heic2any({
         blob: file,
