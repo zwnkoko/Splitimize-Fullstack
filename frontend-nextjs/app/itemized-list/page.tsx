@@ -49,6 +49,7 @@ export default function ItemizedListPage() {
     coupons,
     tax,
     tips,
+    service_fee,
     subtotal,
     total,
     payment_method,
@@ -163,6 +164,12 @@ export default function ItemizedListPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Tips</span>
                   <span>${tips.toFixed(2)}</span>
+                </div>
+              )}
+              {service_fee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Service Fee</span>
+                  <span>${service_fee.toFixed(2)}</span>
                 </div>
               )}
               <Separator />

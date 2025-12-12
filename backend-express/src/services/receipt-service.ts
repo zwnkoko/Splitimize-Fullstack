@@ -149,6 +149,7 @@ export class ReceiptService implements IReceiptService {
 
       return { generatedContent, usageMetaData };
     } catch (error) {
+      console.error("Error processing OCR text with Gemini:", error);
       throw new Error("Failed to process OCR text.");
     }
   }

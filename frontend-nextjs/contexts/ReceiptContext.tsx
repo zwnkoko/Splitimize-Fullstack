@@ -19,6 +19,7 @@ export interface GeneratedContent {
   coupons: Coupon[];
   tax: number;
   tips: number;
+  service_fee: number;
   subtotal: number;
   total: number;
   payment_method: string;
