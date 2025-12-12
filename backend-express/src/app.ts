@@ -5,7 +5,6 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";
 import cors from "cors";
 import { requireAuth } from "./middleware/require-auth";
-import { timeStamp } from "console";
 
 const app = express();
 
