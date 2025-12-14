@@ -32,7 +32,6 @@ export interface IReceiptService {
   ) => Promise<any>;
 }
 
-// Pipeline: OCR > Clean OCR > Confidence score > AI Processing > Response
 export class ReceiptService implements IReceiptService {
   public async processReceiptImages(
     fileBuffers: Buffer[],
@@ -53,8 +52,7 @@ export class ReceiptService implements IReceiptService {
     }
     console.log("OCR Text Results:", textResults);
     const mergedText = textResults.join("\n\n");
-    console.log(mergedText);
-    // Contextualize with AI
+
     const { generatedContent, usageMetaData } = await this.geminiProcessOcrText(
       mergedText
     );
