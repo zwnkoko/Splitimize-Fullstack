@@ -4,7 +4,7 @@ export const getDemoAccountUsage = async (userId: string) => {
   const usage = await prisma.demoAccount.findUnique({
     where: { userId },
   });
-  console.log(usage);
+
   return (
     usage || { dailyCount: 0, hourlyCount: 0, lastRequestTime: new Date(0) }
   );

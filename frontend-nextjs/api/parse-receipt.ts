@@ -18,7 +18,10 @@ export async function parseReceipt(formData: FormData) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to parse receipt image");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.error || "Failed to scan receipt. Please try again."
+    );
   }
   return response.json();
 }
