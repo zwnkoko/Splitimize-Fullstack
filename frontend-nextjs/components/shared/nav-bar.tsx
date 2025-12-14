@@ -22,7 +22,7 @@ export function NavBar({ title, links, showThemeToggle = true }: NavBarProps) {
         <div className="col-span-7 flex flex-col justify-center">
           <p className="font-semibold"> {title} </p>
         </div>
-        <div className="col-span-5 flex flex-row items-center justify-end gap-8">
+        <div className="col-span-5 flex flex-row items-center justify-end gap-4">
           {links.map((link) => (
             <Link
               key={link.href}
