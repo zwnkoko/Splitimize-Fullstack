@@ -129,7 +129,8 @@ export class ReceiptService implements IReceiptService {
 
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-flash-lite-latest",
+        //model: "gemini-flash-lite-latest",
+        model: "gemini-2.5-flash",
         contents: text,
         config: {
           systemInstruction: RECEIPT_PARSING_INSTRUCTION,
@@ -144,8 +145,15 @@ export class ReceiptService implements IReceiptService {
       const generatedContentString =
         response.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-      // Generated content from Gemini always come as a string, so parse it to JSON
-      const generatedContent = JSON.parse(generatedContentString);
+      // If the model wrapped the JSON in Markdown code fences, extract inner JSON.
+      const fencedMatch = generatedContentString.match(
+        /```(?:json)?\s*([\s\S]*?)\s*```/i
+      );
+      const cleanJsonString = fencedMatch
+        ? fencedMatch[1].trim()
+        : generatedContentString.replace(/(^`+|`+$)/g, "").trim();
+
+      const generatedContent = JSON.parse(cleanJsonString);
 
       return { generatedContent, usageMetaData };
     } catch (error) {
