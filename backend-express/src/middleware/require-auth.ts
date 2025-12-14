@@ -2,6 +2,20 @@ import { auth } from "@/lib/auth";
 
 export async function requireAuth(req: any, res: any, next: any) {
   try {
+    // Check for demo mode header
+    const isDemoMode = req.headers["x-demo-mode"] === "true";
+
+    if (isDemoMode) {
+      // Allow demo access with a special demo user object
+      req.user = {
+        id: "DEMO",
+        name: "Demo User",
+        email: "demo@splitimize.app",
+        isDemo: true,
+      };
+      return next();
+    }
+
     const session = await auth.api.getSession({
       headers: req.headers,
     });

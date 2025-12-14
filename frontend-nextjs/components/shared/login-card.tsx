@@ -3,6 +3,7 @@
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { API_ENDPOINTS } from "@/config/api";
 import {
   Card,
   CardContent,
@@ -42,7 +43,28 @@ export function LoginCard() {
   };
 
   const handleDemoAccess = async () => {
-    console.log("Demo access not implemented yet");
+    try {
+      setLoading(true);
+      const res = await fetch(API_ENDPOINTS.demoAccount, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        console.error("Demo limit hit or server error", data);
+        alert(data?.message || "Demo usage limit exceeded. Try again later.");
+        return;
+      }
+      // Mark demo mode locally so the app can allow access to features
+      localStorage.setItem("splitimize_demo", "true");
+      // Force a full page refresh to re-render nav with demo user
+      window.location.href = "/upload-receipt";
+    } catch (e) {
+      console.error("Demo access error", e);
+      alert("Unable to start demo right now.");
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import { IReceiptService } from "@/services/receipt-service";
+import {
+  isDemoUsageAllowed,
+  incrementDemoUsage,
+} from "@/services/demo-account-service";
 
 export const makeExtractTextController = (receiptService: IReceiptService) => {
   return async (req: Request, res: Response) => {
@@ -7,6 +11,19 @@ export const makeExtractTextController = (receiptService: IReceiptService) => {
       if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
         res.status(400).json({ error: "No files uploaded" });
         return;
+      }
+
+      // Check demo usage limits if in demo mode
+      const user = (req as any).user;
+      if (user?.isDemo) {
+        const DEMO_ID = "DEMO";
+        const allowed = await isDemoUsageAllowed(DEMO_ID);
+        if (!allowed) {
+          res
+            .status(429)
+            .json({ error: "Demo usage limit exceeded. Reset in an hour." });
+          return;
+        }
       }
 
       // Extract uploaded files
@@ -17,6 +34,11 @@ export const makeExtractTextController = (receiptService: IReceiptService) => {
         fileBuffers,
         "api"
       );
+
+      // Increment demo usage after successful parse if in demo mode
+      if (user?.isDemo) {
+        await incrementDemoUsage("DEMO");
+      }
 
       res.json(result);
     } catch (error) {

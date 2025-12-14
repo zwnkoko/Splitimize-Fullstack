@@ -5,6 +5,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CircleUserRound } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +18,20 @@ import {
 export function AuthButton() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const isAuthenticated = !!session;
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const isAuthenticated = !!session || isDemoMode;
+
+  useEffect(() => {
+    setIsDemoMode(localStorage.getItem("splitimize_demo") === "true");
+  }, []);
 
   const signOutHandler = async () => {
+    if (isDemoMode) {
+      localStorage.removeItem("splitimize_demo");
+      setIsDemoMode(false);
+      router.push("/login");
+      return;
+    }
     await signOut({
       fetchOptions: {
         onSuccess: () => {
@@ -43,6 +55,8 @@ export function AuthButton() {
   // in development mode, the avatar may not show user profile image
   // because component is rendered twice due to strict mode and server(google, github) may reject instantaneous double requests
   if (isAuthenticated) {
+    const displayImage = isDemoMode ? undefined : session?.user?.image;
+
     return (
       <>
         <div className="hidden md:flex items-center justify-center">
@@ -51,28 +65,30 @@ export function AuthButton() {
               <Button variant="ghost" className="w-7 h-7">
                 <Avatar className="w-7 h-7">
                   <AvatarImage
-                    key={session.user.image}
-                    src={session.user.image || undefined}
+                    key={displayImage}
+                    src={displayImage || undefined}
                     alt="profile picture"
                   />
                   <AvatarFallback>
-                    <CircleUserRound />
+                    {isDemoMode ? "D" : <CircleUserRound />}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {isDemoMode ? "Demo Account" : "My Account"}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOutHandler}>
-                Sign Out
+                {isDemoMode ? "Exit Demo" : "Sign Out"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         <Button className="w-full md:hidden" onClick={signOutHandler}>
-          Sign Out
+          {isDemoMode ? "Exit Demo" : "Sign Out"}
         </Button>
       </>
     );
