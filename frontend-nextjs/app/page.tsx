@@ -291,7 +291,7 @@ export default function HomePage() {
                 100%
               </div>
               <div className="text-sm text-muted-foreground">
-                Full-Stack Implementation
+                Responsive Layout
               </div>
             </div>
             <div className="space-y-2">
