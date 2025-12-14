@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NavBar } from "@/components/shared/nav-bar";
-import { Footer } from "@/components/shared/footer";
 import { navLinks } from "@/app/navLinks";
 import { QueryProvider } from "@/components/query-provider";
 import { ReceiptProvider } from "@/contexts/ReceiptContext";
@@ -48,7 +47,9 @@ export default function RootLayout({
                 </header>
                 <main className="py-8">{children}</main>
                 <footer className="flex flex-col items-center gap-4 pb-2">
-                  <Footer />
+                  <p className="text-sm text-muted-foreground">
+                    Made by Zaw Ko Ko
+                  </p>
                 </footer>
               </div>
             </ReceiptProvider>
