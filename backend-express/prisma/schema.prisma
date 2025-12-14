@@ -74,3 +74,11 @@ model Verification {
 
   @@map("verification")
 }
+
+model DemoAccount {
+  id              Int      @id @default(autoincrement())
+  userId          String   @unique
+  dailyCount      Int      @default(0)
+  hourlyCount     Int      @default(0)
+  lastRequestTime DateTime @default(now())
+}

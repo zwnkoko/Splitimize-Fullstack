@@ -5,24 +5,28 @@ import { useState, useEffect } from "react";
 
 export function useAuthGuard() {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { data: session, isPending } = useSession();
 
   useEffect(() => {
-    if (!isPending && !session) {
+    const demoMode = localStorage.getItem("splitimize_demo") === "true";
+    setIsDemoMode(demoMode);
+    if (!isPending && !session && !demoMode) {
       console.log("isPending:", isPending, "session:", session);
       setShowAuthModal(true);
     }
-  }, []);
+  }, [isPending, session]);
 
   const requireAuth = (callback: () => void) => {
     if (isPending) {
       return; // Prevent action while session is loading. Let calling component handle loading state.
     }
-    if (!session) {
-      setShowAuthModal(true);
+    // Allow if demo mode or authenticated
+    if (isDemoMode || session) {
+      callback();
       return;
     }
-    callback();
+    setShowAuthModal(true);
   };
 
   return {
@@ -30,5 +34,6 @@ export function useAuthGuard() {
     showAuthModal,
     setShowAuthModal,
     requireAuth,
+    isDemoMode,
   };
 }

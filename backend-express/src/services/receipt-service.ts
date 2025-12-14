@@ -50,7 +50,7 @@ export class ReceiptService implements IReceiptService {
     } else {
       throw new Error("Invalid OCR mode specified.");
     }
-    console.log("OCR Text Results:", textResults);
+
     const mergedText = textResults.join("\n\n");
 
     const { generatedContent, usageMetaData } = await this.geminiProcessOcrText(

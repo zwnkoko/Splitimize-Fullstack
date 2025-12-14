@@ -5,6 +5,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";
 import cors from "cors";
 import { requireAuth } from "./middleware/require-auth";
+import demoRouter from "./routes/demo-account";
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.get("/", (_req, res) => {
     timeStamp: new Date().toISOString(),
   });
 });
+
+app.use("/demo-account", demoRouter);
 
 // Protected routes
 app.use("/api", requireAuth, routes);
