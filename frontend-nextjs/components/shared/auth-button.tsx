@@ -55,9 +55,6 @@ export function AuthButton() {
   // in development mode, the avatar may not show user profile image
   // because component is rendered twice due to strict mode and server(google, github) may reject instantaneous double requests
   if (isAuthenticated) {
-    const displayName = isDemoMode
-      ? "Demo User"
-      : session?.user?.name || "User";
     const displayImage = isDemoMode ? undefined : session?.user?.image;
 
     return (

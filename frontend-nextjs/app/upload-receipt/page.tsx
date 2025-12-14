@@ -90,7 +90,7 @@ export default function UploadReceiptPage() {
           toast.success("Receipt parsed successfully!");
           router.push("/itemized-list");
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           toast.error(error.message);
         },
       });

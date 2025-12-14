@@ -4,7 +4,6 @@ import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { API_ENDPOINTS } from "@/config/api";
-import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -15,7 +14,6 @@ import {
 
 export function LoginCard() {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSignIn = async (provider: string) => {
     const allowedProviders = ["google", "github"];
