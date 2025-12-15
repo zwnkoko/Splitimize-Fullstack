@@ -9,9 +9,9 @@ export const isDemoUsageAllowed = async (userId: string) => {
   const currentTime = new Date();
 
   // Check daily limit
-  if (usage.dailyCount >= 30) {
-    return false;
-  }
+  // if (usage.dailyCount >= 30) {
+  //   return false;
+  // }
 
   // Check hourly limit
   const hourStart = new Date(currentTime);
