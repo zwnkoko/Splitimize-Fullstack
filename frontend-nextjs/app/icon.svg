@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+  </defs>
+  <!-- Dark base -->
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="#0b1220"/>
+  <!-- Bold S with diagonal slash -->
+  <g transform="translate(24,24)">
+    <!-- Stylized S -->
+    <path d="M72 18c0-9.941-8.059-18-18-18H36C22.745 0 12 10.745 12 24c0 7.732 6.268 14 14 14h18c8.837 0 16 7.163 16 16s-7.163 16-16 16H34c-9.941 0-18-8.059-18-18" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/>
+    <!-- Diagonal cross '/' -->
+    <path d="M-2 82 L82 -2" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <!-- Minimal receipt hint removed for clarity at small sizes -->
+  <title>Splitimize</title>
+</svg>
