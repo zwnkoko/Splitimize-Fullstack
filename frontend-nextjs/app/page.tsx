@@ -25,8 +25,8 @@ export default function HomePage() {
               Splitimize
             </h1>
             <p className="text-2xl text-muted-foreground leading-relaxed max-w-2xl">
-              Smart bill splitting made simple. Upload, extract, split, and
-              settle up with ease.
+              Smart bill splitting made simple. Upload receipt and settle up
+              with ease.
             </p>
           </div>
 
